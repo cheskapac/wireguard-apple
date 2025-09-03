@@ -35,6 +35,7 @@ let package = Package(
         .target(
             name: "WireGuardKitGo",
             dependencies: [
+                "WireGuardKitC",
                 "WireGuardKit",
                 .product(name: "WGKitGo", package: "wg-go-apple")
             ]
