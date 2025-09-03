@@ -20,7 +20,7 @@ let package = Package(
         )
     ],
     dependencies: [
-        .package(url: "https://github.com/cheskapac/wg-go-apple", from: "0.0.20250902")
+        .package(url: "https://github.com/cheskapac/wg-go-apple", from: "0.0.20250903")
     ],
     targets: [
         .target(
@@ -36,7 +36,7 @@ let package = Package(
             name: "WireGuardKitGo",
             dependencies: [
                 "WireGuardKit",
-                "wg-go-apple"
+                .product(name: "WGKitGo", package: "wg-go-apple")
             ]
         )
     ]

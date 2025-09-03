@@ -2,7 +2,7 @@
 // Copyright © 2018-2023 WireGuard LLC. All Rights Reserved.
 
 import Foundation
-import wg_go
+import WGKitGo
 
 #if SWIFT_PACKAGE
 import WireGuardKit
@@ -14,11 +14,18 @@ public final class WireGuardBackendGo: WireGuardBackend {
     }
 
     public func setLogger(context: UnsafeMutableRawPointer?, logger_fn: WireGuardLoggerCallback?) {
-        wgSetLogger(context, logger_fn)
+        wgSetLogger(
+            unsafeBitCast(context, to: GoUintptr.self),
+            unsafeBitCast(logger_fn, to: GoUintptr.self)
+        )
     }
 
     public func turnOn(settings: String, tun_fd: Int32) -> Int32 {
-        wgTurnOn(settings.rawString, tun_fd)
+        var result: Int32 = 0
+        settings.withCString { cString in
+            result = wgTurnOn(UnsafeMutablePointer(mutating: cString), tun_fd)
+        }
+        return result
     }
 
     public func turnOff(_ handle: Int32) {
@@ -26,7 +33,11 @@ public final class WireGuardBackendGo: WireGuardBackend {
     }
 
     public func setConfig(_ handle: Int32, settings: String) -> Int64 {
-        wgSetConfig(handle, settings.rawString)
+        var result: Int64 = 0
+        settings.withCString { cString in
+            result = wgSetConfig(handle, UnsafeMutablePointer(mutating: cString))
+        }
+        return result
     }
 
     public func getConfig(_ handle: Int32) -> String? {
