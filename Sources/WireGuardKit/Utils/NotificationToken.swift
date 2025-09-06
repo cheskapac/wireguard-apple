@@ -9,7 +9,7 @@ import Foundation
 /// Wraps the observer token received from
 /// `NotificationCenter.addObserver(forName:object:queue:using:)`
 /// and unregisters it in deinit.
-final class NotificationToken {
+public final class WireGuardKitNotificationToken {
     let notificationCenter: NotificationCenter
     let token: Any
 
@@ -23,11 +23,11 @@ final class NotificationToken {
     }
 }
 
-extension NotificationCenter {
+public extension NotificationCenter {
     /// Convenience wrapper for addObserver(forName:object:queue:using:)
-    /// that returns our custom `NotificationToken`.
-    func observe(name: NSNotification.Name?, object obj: Any?, queue: OperationQueue?, using block: @escaping (Notification) -> Void) -> NotificationToken {
+    /// that returns our custom `WireGuardKitNotificationToken`.
+    func observe(name: NSNotification.Name?, object obj: Any?, queue: OperationQueue?, using block: @escaping (Notification) -> Void) -> WireGuardKitNotificationToken {
         let token = addObserver(forName: name, object: obj, queue: queue, using: block)
-        return NotificationToken(notificationCenter: self, token: token)
+        return WireGuardKitNotificationToken(notificationCenter: self, token: token)
     }
 }

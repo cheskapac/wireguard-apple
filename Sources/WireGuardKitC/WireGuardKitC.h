@@ -3,6 +3,7 @@
 
 #include <sys/types.h>
 #include "key.h"
+#include "ringlogger.h"
 #include "x25519.h"
 
 /* From <sys/kern_control.h> */

@@ -18,8 +18,8 @@ class LogViewController: NSViewController {
         }
     }
 
-    private var boundsChangedNotificationToken: NotificationToken?
-    private var frameChangedNotificationToken: NotificationToken?
+    private var boundsChangedNotificationToken: WireGuardKitNotificationToken?
+    private var frameChangedNotificationToken: WireGuardKitNotificationToken?
 
     let scrollView: NSScrollView = {
         let scrollView = NSScrollView()

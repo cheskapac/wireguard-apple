@@ -1,0 +1,14 @@
+{
+  "pins" : [
+    {
+      "identity" : "wg-go-apple",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/cheskapac/wg-go-apple",
+      "state" : {
+        "revision" : "60fb8cc23e9759a41348968fad3b4a5b7a0dd026",
+        "version" : "0.0.20250903"
+      }
+    }
+  ],
+  "version" : 2
+}

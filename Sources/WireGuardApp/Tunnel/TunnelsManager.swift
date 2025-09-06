@@ -23,9 +23,9 @@ class TunnelsManager {
     private var tunnels: [TunnelContainer]
     weak var tunnelsListDelegate: TunnelsManagerListDelegate?
     weak var activationDelegate: TunnelsManagerActivationDelegate?
-    private var statusObservationToken: NotificationToken?
+    private var statusObservationToken: WireGuardKitNotificationToken?
     private var waiteeObservationToken: NSKeyValueObservation?
-    private var configurationsObservationToken: NotificationToken?
+    private var configurationsObservationToken: WireGuardKitNotificationToken?
 
     init(tunnelProviders: [NETunnelProviderManager]) {
         tunnels = tunnelProviders.map { TunnelContainer(tunnel: $0) }.sorted { TunnelsManager.tunnelNameIsLessThan($0.name, $1.name) }
@@ -75,7 +75,7 @@ class TunnelsManager {
                     tunnelManagers.remove(at: index)
                 }
             }
-            Keychain.deleteReferences(except: refs)
+            WireGuardKitKeychain.deleteReferences(except: refs)
             #if os(iOS)
             RecentTunnelsTracker.cleanupTunnels(except: tunnelNames)
             #endif

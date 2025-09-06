@@ -3,8 +3,7 @@
 
 import Foundation
 
-extension TunnelConfiguration {
-
+public extension TunnelConfiguration {
     enum ParserState {
         case inInterfaceSection
         case inPeerSection
@@ -248,5 +247,4 @@ extension TunnelConfiguration {
         }
         return peer
     }
-
 }

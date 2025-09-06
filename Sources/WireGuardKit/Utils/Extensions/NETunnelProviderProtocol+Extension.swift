@@ -2,23 +2,25 @@
 // Copyright © 2018-2023 WireGuard LLC. All Rights Reserved.
 
 import NetworkExtension
+import os
 
-enum PacketTunnelProviderError: String, Error {
+public enum PacketTunnelProviderError: String, Error {
     case savedProtocolConfigurationIsInvalid
     case dnsResolutionFailure
     case couldNotStartBackend
     case couldNotDetermineFileDescriptor
     case couldNotSetNetworkSettings
+    case invalidState
 }
 
-extension NETunnelProviderProtocol {
+public extension NETunnelProviderProtocol {
     convenience init?(tunnelConfiguration: TunnelConfiguration, previouslyFrom old: NEVPNProtocol? = nil) {
         self.init()
 
         guard let name = tunnelConfiguration.name else { return nil }
         guard let appId = Bundle.main.bundleIdentifier else { return nil }
         providerBundleIdentifier = "\(appId).network-extension"
-        passwordReference = Keychain.makeReference(containing: tunnelConfiguration.asWgQuickConfig(), called: name, previouslyReferencedBy: old?.passwordReference)
+        passwordReference = WireGuardKitKeychain.makeReference(containing: tunnelConfiguration.asWgQuickConfig(), called: name, previouslyReferencedBy: old?.passwordReference)
         if passwordReference == nil {
             return nil
         }
@@ -38,10 +40,10 @@ extension NETunnelProviderProtocol {
 
     func asTunnelConfiguration(called name: String? = nil) -> TunnelConfiguration? {
         if let passwordReference = passwordReference,
-            let config = Keychain.openReference(called: passwordReference) {
+            let config = WireGuardKitKeychain.openReference(called: passwordReference) {
             return try? TunnelConfiguration(fromWgQuickConfig: config, called: name)
         }
-        if let oldConfig = providerConfiguration?["WgQuickConfig"] as? String {
+        if let oldConfig = providerConfiguration?["wgQuickConfig"] as? String {
             return try? TunnelConfiguration(fromWgQuickConfig: oldConfig, called: name)
         }
         return nil
@@ -49,12 +51,12 @@ extension NETunnelProviderProtocol {
 
     func destroyConfigurationReference() {
         guard let ref = passwordReference else { return }
-        Keychain.deleteReference(called: ref)
+        WireGuardKitKeychain.deleteReference(called: ref)
     }
 
     func verifyConfigurationReference() -> Bool {
         guard let ref = passwordReference else { return false }
-        return Keychain.verifyReference(called: ref)
+        return WireGuardKitKeychain.verifyReference(called: ref)
     }
 
     @discardableResult
@@ -73,7 +75,7 @@ extension NETunnelProviderProtocol {
             #endif
             guard passwordReference == nil else { return true }
             wg_log(.info, message: "Migrating tunnel configuration '\(name)'")
-            passwordReference = Keychain.makeReference(containing: oldConfig, called: name)
+            passwordReference = WireGuardKitKeychain.makeReference(containing: oldConfig, called: name)
             return true
         }
         #if os(macOS)

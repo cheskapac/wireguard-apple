@@ -3,6 +3,7 @@
 
 import Foundation
 import os.log
+import WireGuardKitC
 
 public class Logger {
     enum LoggerError: Error {
@@ -32,7 +33,7 @@ public class Logger {
         return write_log_to_file(targetFile, self.log) == 0
     }
 
-    static func configureGlobal(tagged tag: String, withFilePath filePath: String?) {
+    public static func configureGlobal(tagged tag: String, withFilePath filePath: String?) {
         if Logger.global != nil {
             return
         }
@@ -54,12 +55,29 @@ public class Logger {
     }
 }
 
-func wg_log(_ type: OSLogType, staticMessage msg: StaticString) {
-    os_log(msg, log: OSLog.default, type: type)
-    Logger.global?.log(message: "\(msg)")
-}
-
-func wg_log(_ type: OSLogType, message msg: String) {
+public func wg_log(_ type: OSLogType, message msg: String) {
+    #if DEBUG
+    NSLog("[%@]: %@\n", type.rawString, msg)
+    #endif
     os_log("%{public}s", log: OSLog.default, type: type, msg)
     Logger.global?.log(message: msg)
+}
+
+private extension OSLogType {
+    var rawString: String {
+        switch self {
+        case .default:
+            return "DEFAULT"
+        case .info:
+            return "INFO"
+        case .debug:
+            return "DEBUG"
+        case .error:
+            return "ERROR"
+        case .fault:
+            return "FAULT"
+        default:
+            return "UNKNOWN"
+        }
+    }
 }
